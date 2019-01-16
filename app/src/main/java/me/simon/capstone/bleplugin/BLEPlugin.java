@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 
 import java.util.ArrayList;
@@ -12,14 +11,14 @@ import java.util.UUID;
 
 public class BLEPlugin {
     private static BluetoothAdapter bluetoothAdapter;
-    private static ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
+    private static ArrayList<BLEDevice> discoveredDevices = new ArrayList<>();
 
     private static boolean scanning = false;
     private static Handler scanHandler = new Handler();
     private static BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            bluetoothDevices.add(device);
+            discoveredDevices.add(new BLEDevice(device));
         }
     };
 
@@ -51,7 +50,7 @@ public class BLEPlugin {
             }
 
             // Clear previous results
-            bluetoothDevices.clear();
+            discoveredDevices.clear();
 
             // Stop scanning after 5 seconds
             scanHandler.postDelayed(new Runnable() {
@@ -72,5 +71,13 @@ public class BLEPlugin {
     public static void stopScan() {
         scanning = false;
         bluetoothAdapter.stopLeScan(leScanCallback);
+    }
+
+    public static boolean isScanning() {
+        return scanning;
+    }
+
+    public ArrayList<BLEDevice> getDiscoveredDevices() {
+        return discoveredDevices;
     }
 }
