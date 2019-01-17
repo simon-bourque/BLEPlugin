@@ -5,11 +5,14 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class BLEPlugin {
+    public static final String BLEPLUGIN_TAG = "BLEPLUGIN";
+
     private static BluetoothAdapter bluetoothAdapter;
     private static ArrayList<BLEDevice> discoveredDevices = new ArrayList<>();
 
@@ -24,9 +27,11 @@ public class BLEPlugin {
 
     public static boolean init(Context context, Activity activity) {
        //final BluetoothManager bm = (BluetoothManager)context.getSystemService(Context.BLUETOOTH_SERVICE);
-       bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Log.v(BLEPLUGIN_TAG, "Initializing plugin!");
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             // Bluetooth not supported
+            Log.v(BLEPLUGIN_TAG, "Bluetooth not supported!");
             return false;
         }
 
@@ -34,6 +39,7 @@ public class BLEPlugin {
             // TODO extend UnityPlayerActivity to handle this
             //Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             //activity.startActivityForResult(enableBTIntent, 1);
+            Log.v(BLEPLUGIN_TAG, "Bluetooth not enabled!");
             return false;
         }
 
@@ -61,6 +67,7 @@ public class BLEPlugin {
             }, 5000);
 
             // Start scan
+            Log.v(BLEPLUGIN_TAG, "Starting scan!");
             scanning = true;
             return bluetoothAdapter.startLeScan(uuids, leScanCallback);
         }
@@ -69,6 +76,7 @@ public class BLEPlugin {
     }
 
     public static void stopScan() {
+        Log.v(BLEPLUGIN_TAG, "Stopping scan!");
         scanning = false;
         bluetoothAdapter.stopLeScan(leScanCallback);
     }
