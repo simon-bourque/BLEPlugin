@@ -85,7 +85,7 @@ public class BLEPlugin {
         return scanning;
     }
 
-    public ArrayList<BLEDevice> getDiscoveredDevices() {
+    public static ArrayList<BLEDevice> getDiscoveredDevices() {
         return discoveredDevices;
     }
 }
