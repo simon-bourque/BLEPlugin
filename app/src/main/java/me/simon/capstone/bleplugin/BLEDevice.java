@@ -36,11 +36,11 @@ public class BLEDevice extends BluetoothGattCallback {
         return gatt != null;
     }
 
-    public boolean hasData() {
+    public synchronized boolean hasData() {
         return !data.isEmpty();
     }
 
-    public byte[] popData() {
+    public synchronized byte[] popData() {
         byte[] bytes = new byte[data.size()];
         for (int i = 0; i < data.size(); ++i) {
             bytes[i] = data.get(i).byteValue();
@@ -84,7 +84,7 @@ public class BLEDevice extends BluetoothGattCallback {
     }
 
     @Override
-    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+    public synchronized void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             byte[] bytes = characteristic.getValue();
             for (int i = 0; i < bytes.length; ++i) {
