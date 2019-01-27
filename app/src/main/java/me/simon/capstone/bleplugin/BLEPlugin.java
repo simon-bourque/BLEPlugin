@@ -64,7 +64,7 @@ public class BLEPlugin {
                 public void run() {
                     stopScan();
                 }
-            }, 5000);
+            }, 10000);
 
             // Start scan
             Log.v(BLEPLUGIN_TAG, "Starting scan!");
