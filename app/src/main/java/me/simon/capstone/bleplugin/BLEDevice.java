@@ -40,6 +40,8 @@ public class BLEDevice extends BluetoothGattCallback {
         return !data.isEmpty();
     }
 
+    public String getUUID() { return device.getUuids()[0].toString(); }
+
     public synchronized byte[] popData() {
         byte[] bytes = new byte[data.size()];
         for (int i = 0; i < data.size(); ++i) {
