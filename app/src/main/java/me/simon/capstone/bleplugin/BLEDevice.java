@@ -18,12 +18,14 @@ public class BLEDevice extends BluetoothGattCallback {
     private BluetoothDevice device;
     private BluetoothGatt gatt;
 
+    private UUID deviceUUID;
     private UUID characteristicUUID;
 
     private ArrayList<Byte> data;
 
-    public BLEDevice(BluetoothDevice device) {
+    public BLEDevice(BluetoothDevice device, UUID uuid) {
         this.device = device;
+        this.deviceUUID = uuid;
         data = new ArrayList<>();
     }
 
@@ -40,7 +42,7 @@ public class BLEDevice extends BluetoothGattCallback {
         return !data.isEmpty();
     }
 
-    public String getUUID() { return device.getUuids()[0].toString(); }
+    public String getUUID() { return deviceUUID.toString(); }
 
     public synchronized byte[] popData() {
         byte[] bytes = new byte[data.size()];
