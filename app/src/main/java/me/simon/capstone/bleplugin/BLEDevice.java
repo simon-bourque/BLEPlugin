@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,12 +20,11 @@ public class BLEDevice extends BluetoothGattCallback {
     private UUID deviceUUID;
     private UUID characteristicUUID;
 
-    private ArrayList<Byte> data;
+    private byte[] data = null;
 
     public BLEDevice(BluetoothDevice device, UUID uuid) {
         this.device = device;
         this.deviceUUID = uuid;
-        data = new ArrayList<>();
     }
 
     public void connect(Context context, String characteristicUUID) {
@@ -39,18 +37,14 @@ public class BLEDevice extends BluetoothGattCallback {
     }
 
     public synchronized boolean hasData() {
-        return !data.isEmpty();
+        return data != null;
     }
 
     public String getUUID() { return deviceUUID.toString(); }
 
     public synchronized byte[] popData() {
-        byte[] bytes = new byte[data.size()];
-        for (int i = 0; i < data.size(); ++i) {
-            bytes[i] = data.get(i).byteValue();
-        }
-        data.clear();
-
+        byte[] bytes = data;
+        data = null;
         return bytes;
     }
 
@@ -90,10 +84,7 @@ public class BLEDevice extends BluetoothGattCallback {
     @Override
     public synchronized void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            byte[] bytes = characteristic.getValue();
-            for (int i = 0; i < bytes.length; ++i) {
-                data.add(bytes[i]);
-            }
+            data = characteristic.getValue();
         }
     }
 }
