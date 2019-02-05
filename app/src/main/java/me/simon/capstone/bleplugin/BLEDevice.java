@@ -74,8 +74,7 @@ public class BLEDevice extends BluetoothGattCallback {
             // Search for correct characteristic and set notification
             for (BluetoothGattService service : services) {
                 for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-                    gatt.setCharacteristicNotification(characteristic, characteristicUUID.equals(characteristic.getUuid()));
-                    Log.i(BLEPlugin.BLEPLUGIN_TAG, "Found serial characteristic.");
+                        gatt.setCharacteristicNotification(characteristic, characteristicUUID.equals(characteristic.getUuid()));
                 }
             }
         }
@@ -83,8 +82,7 @@ public class BLEDevice extends BluetoothGattCallback {
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        if(characteristicUUID.equals(characteristic.getUuid().toString())){
-            Log.i(BLEPlugin.BLEPLUGIN_TAG, "Serial characteristic changed.");
+        if(characteristicUUID.equals(characteristic.getUuid())){
             gatt.readCharacteristic(characteristic);
         }
     }
