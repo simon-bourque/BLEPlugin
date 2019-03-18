@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.util.Log;
 
 import java.util.List;
 import java.util.UUID;
+
+import static android.bluetooth.BluetoothGattCharacteristic.PROPERTY_NOTIFY;
 
 public class BLEDevice extends BluetoothGattCallback {
 
@@ -67,8 +70,27 @@ public class BLEDevice extends BluetoothGattCallback {
 
             // Search for correct characteristic and set notification
             for (BluetoothGattService service : services) {
-                for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-                        gatt.setCharacteristicNotification(characteristic, characteristicUUID.equals(characteristic.getUuid()));
+                if(service.getUuid().toString().equals("6e400001-b5a3-f393-e0a9-e50e24dcca9e")){
+                    for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                        if(characteristicUUID.equals(characteristic.getUuid())){
+                            Log.i(BLEPlugin.BLEPLUGIN_TAG, "Setting notification on for: " + characteristicUUID.toString());
+                            gatt.setCharacteristicNotification(characteristic, true);
+
+                            int result = characteristic.getProperties();
+
+                            if(( result & BluetoothGattCharacteristic.PROPERTY_READ) != 0){
+                                Log.i(BLEPlugin.BLEPLUGIN_TAG, "We got read");
+                            }
+                            if((result & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0){
+                                Log.i(BLEPlugin.BLEPLUGIN_TAG, "We got notify");
+                            }
+
+                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("000002902-0000-1000-8000-00805f9b34fb"));
+                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+
+                            gatt.writeDescriptor(descriptor);
+                        }
+                    }
                 }
             }
         }
@@ -77,13 +99,16 @@ public class BLEDevice extends BluetoothGattCallback {
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         if(characteristicUUID.equals(characteristic.getUuid())){
-            gatt.readCharacteristic(characteristic);
+            Log.i(BLEPlugin.BLEPLUGIN_TAG, "onCharacteristicChanged");
+            data = characteristic.getValue();
+            //gatt.readCharacteristic(characteristic);
         }
     }
 
     @Override
     public synchronized void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
+            Log.i(BLEPlugin.BLEPLUGIN_TAG, "onCharacteristicRead");
             data = characteristic.getValue();
         }
     }
