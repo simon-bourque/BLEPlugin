@@ -36,7 +36,7 @@ public class BLEDevice extends BluetoothGattCallback {
     }
 
     public boolean isConnected() {
-        return gatt != null;
+        return BLEPlugin.isConnected(device);
     }
 
     public synchronized boolean hasData() {
@@ -99,7 +99,6 @@ public class BLEDevice extends BluetoothGattCallback {
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         if(characteristicUUID.equals(characteristic.getUuid())){
-            Log.i(BLEPlugin.BLEPLUGIN_TAG, "onCharacteristicChanged");
             data = characteristic.getValue();
             //gatt.readCharacteristic(characteristic);
         }
@@ -108,7 +107,6 @@ public class BLEDevice extends BluetoothGattCallback {
     @Override
     public synchronized void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            Log.i(BLEPlugin.BLEPLUGIN_TAG, "onCharacteristicRead");
             data = characteristic.getValue();
         }
     }

@@ -3,6 +3,8 @@ package me.simon.capstone.bleplugin;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class BLEPlugin {
     public static final String BLEPLUGIN_TAG = "BLEPLUGIN";
 
+    private static BluetoothManager bm;
     private static BluetoothAdapter bluetoothAdapter;
     private static ArrayList<BLEDevice> discoveredDevices = new ArrayList<>();
 
@@ -42,7 +45,8 @@ public class BLEPlugin {
     };
 
     public static boolean init(Context context, Activity activity) {
-       //final BluetoothManager bm = (BluetoothManager)context.getSystemService(Context.BLUETOOTH_SERVICE);
+        bm = (BluetoothManager)context.getSystemService(Context.BLUETOOTH_SERVICE);
+
         Log.v(BLEPLUGIN_TAG, "Initializing plugin!");
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothAdapter.enable();
@@ -106,6 +110,11 @@ public class BLEPlugin {
         Log.v(BLEPLUGIN_TAG, "Stopping scan!");
         scanning = false;
         bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+    }
+
+    public static boolean isConnected(BluetoothDevice device) {
+        List<BluetoothDevice> connectedDevices = bm.getConnectedDevices(BluetoothGatt.GATT);
+        return connectedDevices.contains(device);
     }
 
     public static boolean isScanning() {
